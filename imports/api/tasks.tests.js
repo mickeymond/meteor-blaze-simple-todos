@@ -26,12 +26,10 @@ if (Meteor.isServer) {
           createdAt: new Date(),
           owner: loggedInUser._id,
           username: loggedInUser.username,
-          private: true,
-          checked: false
         });
       });
 
-      it('can insert task if logged in', () => {
+      it('Can insert task if logged in', () => {
         const inserTask = Meteor.server.method_handlers['tasks.insert'];
  
         const invocation = { userId: loggedInUser._id };
@@ -41,19 +39,19 @@ if (Meteor.isServer) {
         assert.equal(Tasks.find().count(), 2);
       });
 
-      it('cannot insert task if not logged in', () => {
+      it('Cannot insert task if not logged in', () => {
         const inserTask = Meteor.server.method_handlers['tasks.insert'];
  
         const invocation = { userId: fakeUserId };
  
         assert.throws(() => {
           inserTask.apply(invocation, ['Welcome Here']);
-        }, Meteor.Error.error);
+        });
  
         assert.equal(Tasks.find().count(), 1);
       });
 
-      it('can delete owned task', () => {
+      it('Can delete owned task', () => {
         const deleteTask = Meteor.server.method_handlers['tasks.remove'];
  
         const invocation = { userId: loggedInUser._id };
@@ -63,19 +61,19 @@ if (Meteor.isServer) {
         assert.equal(Tasks.find().count(), 0);
       });
 
-      it('cannot delete someone else task', () => {
+      it('Cannot delete someone else task', () => {
         const deleteTask = Meteor.server.method_handlers['tasks.remove'];
  
         const invocation = { userId: fakeUserId };
  
         assert.throws(() => {
           deleteTask.apply(invocation, [taskId]);
-        }, Meteor.Error.error);
+        });
  
         assert.equal(Tasks.find().count(), 1);
       });
 
-      it('can set own task checked', () => {
+      it('Can set own task checked', () => {
         const setTaskChecked = Meteor.server.method_handlers['tasks.setChecked'];
  
         const invocation = { userId: loggedInUser._id };
@@ -89,7 +87,7 @@ if (Meteor.isServer) {
         assert.equal(Tasks.findOne(taskId).checked, !oldChecked);
       });
 
-      it('cannot set someone task checked', () => {
+      it('Cannot set someone task checked', () => {
         const setTaskChecked = Meteor.server.method_handlers['tasks.setChecked'];
  
         const invocation = { userId: fakeUserId };
@@ -100,12 +98,12 @@ if (Meteor.isServer) {
  
         assert.throws(() => {
           setTaskChecked.apply(invocation, [taskId, !oldChecked]);
-        }, Meteor.Error.error);
+        });
  
         assert.equal(Tasks.findOne(taskId).checked, oldChecked);
       });
 
-      it('can set own task private', () => {
+      it('Can set own task private', () => {
         const setOwnTaskPrivate = Meteor.server.method_handlers['tasks.setPrivate'];
  
         const invocation = { userId: loggedInUser._id };
@@ -119,7 +117,7 @@ if (Meteor.isServer) {
         assert.equal(Tasks.findOne(taskId).private, !oldPrivate);
       });
 
-      it('cannot set someone task private', () => {
+      it('Cannot set someone task private', () => {
         const setOwnTaskPrivate = Meteor.server.method_handlers['tasks.setPrivate'];
  
         const invocation = { userId: fakeUserId };
@@ -130,9 +128,44 @@ if (Meteor.isServer) {
  
         assert.throws(() => {
           setOwnTaskPrivate.apply(invocation, [taskId, !oldPrivate]);
-        }, Meteor.Error.error);
+        });
  
         assert.equal(Tasks.findOne(taskId).private, oldPrivate);
+      });
+
+      it('Can view own tasks and non-private tasks', () => {
+        Tasks.insert({
+          text: 'public task',
+          createdAt: new Date(),
+          owner: fakeUserId,
+          username: 'fakeuser',
+        });
+        
+        const tasksPublication = Meteor.server.publish_handlers['tasks'];
+
+        const invocation = { userId: loggedInUser._id };
+        
+        const tasks = tasksPublication.apply(invocation);
+
+        assert.equal(tasks.count(), 2);
+      });
+
+      it('Cannot view someone private tasks', () => {
+        Tasks.insert({
+          text: 'private task',
+          createdAt: new Date(),
+          owner: fakeUserId,
+          username: 'fakeuser',
+          private: true
+        });
+
+        const tasksPublication = Meteor.server.publish_handlers['tasks'];
+
+        const invocation = { userId: loggedInUser._id };
+        
+        const tasks = tasksPublication.apply(invocation);
+
+        assert.equal(tasks.count(), 1);
       });
     });
   });

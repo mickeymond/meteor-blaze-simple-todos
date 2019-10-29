@@ -6,3 +6,5 @@
 6. Cannot set someone else task checked
 7. Can set own task private
 8. Cannot set someone else task private
+9. Can view own tasks and non-private tasks
+10. Cannot view someone private tasks

@@ -44,7 +44,7 @@ Meteor.methods({
     const task = Tasks.findOne(taskId);
 
     // Make sure task belongs to user
-    if (task.private && task.owner !== this.userId) {
+    if (task.owner !== this.userId) {
       throw new Meteor.Error('Not-Authorized');
     }
  
@@ -58,7 +58,7 @@ Meteor.methods({
     const task = Tasks.findOne(taskId);
 
     // Make sure task belongs to user
-    if (task.private && task.owner !== this.userId) {
+    if (task.owner !== this.userId) {
       throw new Meteor.Error('Not-Authorized to toggle completed');
     }
  
