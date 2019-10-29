@@ -1,0 +1,8 @@
+1. Can insert task
+2. Cannot insert task if not logged in
+3. Can delete own task
+4. Cannot delete someone else task
+5. Can set own task checked
+6. Cannot set someone else task checked
+7. Can set own task private
+8. Cannot set someone else task private
