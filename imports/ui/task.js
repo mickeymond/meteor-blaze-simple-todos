@@ -12,20 +12,16 @@ Template.task.helpers({
 Template.task.events({
   'click .toggle-checked'() {
     // Set the checked property to the opposite of its current value
-    // Tasks.update(this._id, {
-    //   $set: { checked: !this.checked },
-    // });
-
     Meteor.call('tasks.setChecked', this._id, !this.checked);
   },
 
   'click .delete'() {
-    // Tasks.remove(this._id);
-
+    // Remove task from database
     Meteor.call('tasks.remove', this._id);
   },
 
   'click .toggle-private'() {
+    // Toggle privacy
     Meteor.call('tasks.setPrivate', this._id, !this.private);
   },
 });

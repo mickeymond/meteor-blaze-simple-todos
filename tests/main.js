@@ -1,6 +1,10 @@
 import assert from "assert";
 
-import '../imports/api/tasks.tests';
+// Client Tests
+import '../imports/ui/task.test';
+
+// Server Tests
+import '../imports/api/tasks.test';
 
 describe("meteor-simple-todos-blaze", function () {
   it("package.json has correct name", async function () {
